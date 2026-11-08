@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Capture">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="referrer" content="no-referrer">
+<title>Capture</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main id="home" class="screen">
+  <header class="bar">
+    <h1>Capture</h1>
+    <button id="openSettings" class="icon-btn" aria-label="Settings">
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Zm7.4-2.5c.04-.33.06-.66.06-1s-.02-.67-.06-1l2.1-1.65a.5.5 0 0 0 .12-.64l-2-3.46a.5.5 0 0 0-.6-.22l-2.48 1a7.3 7.3 0 0 0-1.73-1l-.37-2.65A.5.5 0 0 0 14 2h-4a.5.5 0 0 0-.5.42l-.37 2.65c-.63.26-1.2.6-1.73 1l-2.48-1a.5.5 0 0 0-.6.22l-2 3.46a.5.5 0 0 0 .12.64L4.54 11c-.04.33-.06.66-.06 1s.02.67.06 1l-2.1 1.65a.5.5 0 0 0-.12.64l2 3.46c.13.22.39.3.6.22l2.48-1c.53.4 1.1.74 1.73 1l.37 2.65c.05.24.25.42.5.42h4c.25 0 .45-.18.5-.42l.37-2.65c.63-.26 1.2-.6 1.73-1l2.48 1c.22.08.48 0 .6-.22l2-3.46a.5.5 0 0 0-.12-.64L19.4 13Z"/></svg>
+    </button>
+  </header>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <section class="card compose">
+    <textarea id="note" placeholder="What's on your mind?" autocapitalize="sentences" autocorrect="on" spellcheck="true"></textarea>
+    <div class="compose-foot">
+      <button id="mic" class="mic" aria-label="Dictate" hidden>
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V5a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2Z"/></svg>
+      </button>
+      <span id="count" class="muted small"></span>
+    </div>
+  </section>
+
+  <div class="chips" role="group" aria-label="Hint (optional)">
+    <button class="chip" data-hint="Basant">Basant</button>
+    <button class="chip" data-hint="Personal">Personal</button>
+    <button class="chip" data-hint="Idea">Idea</button>
+    <button class="chip" data-hint="Task">Task</button>
+    <button class="chip" data-hint="Decision">Decision</button>
+  </div>
+  <p class="muted small hint-note">No chip = Nizam decides.</p>
+
+  <button id="send" class="send">Send</button>
+
+  <section>
+    <div class="section-head">
+      <h2>Recent</h2>
+      <span id="queueInfo" class="muted small"></span>
+    </div>
+    <ul id="recent" class="list"></ul>
+  </section>
+</main>
+
+<main id="settings" class="screen" hidden>
+  <header class="bar">
+    <button id="closeSettings" class="text-btn">‹ Back</button>
+    <h1>Settings</h1>
+    <span class="spacer"></span>
+  </header>
+
+  <p class="muted small pad">Saved only on this phone (localStorage). Nothing here is in the app's code.</p>
+
+  <section class="card form">
+    <label>Send via
+      <select id="mode">
+        <option value="relay">GitHub relay (recommended)</option>
+        <option value="direct">Direct to webhook</option>
+      </select>
+    </label>
+  </section>
+
+  <section class="card form" data-mode="relay">
+    <h3>GitHub relay</h3>
+    <label>Repo (owner/name)<input id="ghRepo" placeholder="pakrashi/capture-relay" autocapitalize="off" autocorrect="off"></label>
+    <label>Workflow file<input id="ghWorkflow" placeholder="relay.yml" autocapitalize="off" autocorrect="off"></label>
+    <label>Branch<input id="ghRef" placeholder="main" autocapitalize="off" autocorrect="off"></label>
+    <label>Fine-grained token (Actions: write, this repo only)<input id="ghToken" type="password" placeholder="github_pat_…" autocapitalize="off" autocorrect="off"></label>
+    <p class="muted small">The relay forwards each note to the webhook using the URL and key stored as GitHub secrets.</p>
+  </section>
+
+  <section class="card form" data-mode="direct">
+    <h3>Direct webhook</h3>
+    <label>Webhook URL<input id="url" type="url" placeholder="https://api2.cursor.sh/automations/webhook/…" autocapitalize="off" autocorrect="off"></label>
+    <label>Sender key<input id="key" type="password" placeholder="crsr_…" autocapitalize="off" autocorrect="off"></label>
+    <details>
+      <summary class="small">Advanced header</summary>
+      <label>Header name<input id="headerName" placeholder="Authorization" autocapitalize="off" autocorrect="off"></label>
+      <label>Value prefix<input id="headerPrefix" placeholder="Bearer " autocapitalize="off" autocorrect="off"></label>
+    </details>
+    <p class="muted small">Note: the webhook currently blocks browser calls from other sites (CORS), so direct mode will likely fail from Safari. Use the relay.</p>
+  </section>
+
+  <div class="row pad">
+    <button id="save" class="send small-btn">Save</button>
+    <button id="test" class="secondary small-btn">Send test note</button>
+  </div>
+  <p id="settingsMsg" class="small pad"></p>
+
+  <section class="card form">
+    <button id="retryNow" class="secondary">Retry queued notes now</button>
+    <button id="clearHistory" class="danger">Clear recent list</button>
+  </section>
+</main>
+
+<div id="toast" class="toast" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>
